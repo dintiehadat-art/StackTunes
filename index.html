@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StackTunes Music Playlist</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px #cccccc;
+        }
+        h1 {
+            color: #243b55;
+        }
+        input {
+            padding: 10px;
+            width: 60%;
+            margin: 5px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #243b55;
+            color: white;
+        }
+        button:hover {
+            background: #141e30;
+        }
+        li {
+            padding: 8px;
+            text-align: left;
+            cursor: pointer;
+        }
+        .current {
+            color: #087f23;
+            font-weight: bold;
+        }
+        .panel {
+            background: #f0f4f8;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 StackTunes</h1>
+        <p>Music Playlist Navigation Using Stacks</p>
+        <input type="text" id="songInput"
+               placeholder="Enter song title">
+        <button onclick="addSong()">Add Song</button>
+        <h3>My Playlist</h3>
+        <ul id="playlist"></ul>
+        <h3 id="currentSong">No song selected</h3>
+        <button onclick="previousSong()">Previous</button>
+        <button onclick="nextSong()">Next</button>
+        <button onclick="clearPlaylist()">Clear Playlist</button>
+        <div class="panel">
+            <h3>Previous Songs Stack</h3>
+            <p id="history">Empty</p>
+        </div>
+        <div class="panel">
+            <h3>Forward Songs Stack</h3>
+            <p id="forward">Empty</p>
+        </div>
+    </div>
+    <script>
+        let songs = [];
+        let currentIndex = -1;
+        // Stacks store navigation history.
+        let historyStack = [];
+        let forwardStack = [];
+        function addSong() {
+            const input = document.getElementById("songInput");
+            const title = input.value.trim();
+            if (title === "") {
+                alert("Please enter a song title.");
+                return;
+            }
+            songs.push(title);
+            input.value = "";
+            if (currentIndex === -1) {
+                currentIndex = 0;
+                historyStack = [];
+                forwardStack = [];
+            }
+            displayPlaylist();
+            displayCurrentSong();
+        }
+        function displayPlaylist() {
+            const list = document.getElementById("playlist");
+            list.innerHTML = "";
+            songs.forEach(function(song, index) {
+                const item = document.createElement("li");
+                item.textContent = song;
+                if (index === currentIndex) {
+                    item.className = "current";
+                    item.textContent += " ← Playing";
+                }
+                item.onclick = function() {
+                    selectSong(index);
+                };
+                list.appendChild(item);
+            });
+        }
+        function displayCurrentSong() {
+            document.getElementById("currentSong").textContent =
+                currentIndex === -1
+                    ? "No song selected"
+                    : "Selected Song: " + songs[currentIndex];
+            document.getElementById("history").textContent =
+                historyStack.length
+                    ? historyStack.join(" → ")
+                    : "Empty";
+            document.getElementById("forward").textContent =
+                forwardStack.length
+                    ? forwardStack.join(" → ")
+                    : "Empty";
+            displayPlaylist();
+        }
+        function selectSong(index) {
+            if (currentIndex !== -1 && currentIndex !== index) {
+                historyStack.push(songs[currentIndex]);
+            }
+            currentIndex = index;
+            forwardStack = [];
+            displayCurrentSong();
+        }
+        function previousSong() {
+            if (historyStack.length === 0) {
+                alert("There are no previous songs.");
+                return;
+            }
+            if (currentIndex !== -1) {
+                forwardStack.push(songs[currentIndex]);
+            }
+            const previousTitle = historyStack.pop();
+            currentIndex = songs.indexOf(previousTitle);
+            displayCurrentSong();
+        }
+        function nextSong() {
+            if (forwardStack.length === 0) {
+                alert("There are no songs to move forward to.");
+                return;
+            }
+            if (currentIndex !== -1) {
+                historyStack.push(songs[currentIndex]);
+            }
+            const nextTitle = forwardStack.pop();
+            currentIndex = songs.indexOf(nextTitle);
+            displayCurrentSong();
+        }
+        function clearPlaylist() {
+            songs = [];
+            currentIndex = -1;
+            historyStack = [];
+            forwardStack = [];
+            displayCurrentSong();
+        }
+    </script>
+</body>
+</html>
