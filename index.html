@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#121212">
+<title>StackTunes — Music for Every Mood</title>
+<style>
+:root {
+    --green: #1ed760;
+    --muted: #a7a7a7;
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    background: linear-gradient(180deg, #294332 0, #121212 310px, #080808 100%);
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+}
+button, input {
+    font: inherit;
+}
+button {
+    cursor: pointer;
+}
+.app {
+    max-width: 1100px;
+    margin: auto;
+    padding: 18px 18px 150px;
+}
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 22px;
+}
+.logo {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    background: var(--green);
+    color: #07150b;
+    border-radius: 50%;
+    font-size: 21px;
+}
+.profile {
+    border: 0;
+    background: #222;
+    color: white;
+    border-radius: 24px;
+    padding: 9px 13px;
+    font-size: 13px;
+}
+.greeting {
+    font-size: 28px;
+    margin: 12px 0 18px;
+}
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+}
+.quick {
+    background: #ffffff15;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 70px;
+    font-weight: 700;
+    font-size: 13px;
+}
+.quick-art {
+    width: 65px;
+    height: 70px;
+    display: grid;
+    place-items: center;
+    font-size: 27px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #e4b6ff, #6240b5);
+}
+.quick:nth-child(2) .quick-art {
+    background: linear-gradient(135deg, #f6c65c, #b44526);
+}
+.quick:nth-child(3) .quick-art {
+    background: linear-gradient(135deg, #6fe6bd, #17684f);
+}
+.quick:nth-child(4) .quick-art {
+    background: linear-gradient(135deg, #ffb0bb, #b51f53);
+}
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 24px 0 14px;
+}
+.section-head h2 {
+    font-size: 21px;
+    margin: 0;
+}
+.section-head span {
+    color: var(--muted);
+    font-size: 12px;
+}
+.search-wrap {
+    margin-bottom: 14px;
+}
+.search-wrap input,
+.add-row input {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid #383838;
+    background: #242424;
+    color: white;
+    border-radius: 24px;
+    padding: 12px 15px;
+    outline: none;
+}
+.search-wrap input:focus,
+.add-row input:focus {
+    border-color: var(--green);
+}
+.add-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.primary {
+    border: 0;
+    border-radius: 24px;
+    background: var(--green);
+    color: #07150b;
+    font-weight: 800;
+    padding: 11px 16px;
+    white-space: nowrap;
+}
+.upload-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.upload-label {
+    display: inline-block;
+    border: 1px solid #666;
+    border-radius: 22px;
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+}
+.upload-label input {
+    display: none;
+}
+.help,
+.note {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+.track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.track {
+    display: grid;
+    grid-template-columns: 30px 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.track:hover,
+.track.active {
+    background: #ffffff13;
+}
+.track-num {
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+}
+.cover {
+    width: 42px;
+    height: 42px;
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    font-size: 21px;
+    background: linear-gradient(135deg, #cf8a61, #472b61);
+}
+.track-title {
+    font-size: 14px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.track-artist {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+.track-meta {
+    color: var(--muted);
+    font-size: 11px;
+}
+.empty {
+    color: var(--muted);
+    font-size: 13px;
+    padding: 16px;
+}
+.stack-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 26px;
+}
+.stack-card {
+    background: #171717;
+    border: 1px solid #292929;
+    border-radius: 10px;
+    padding: 15px;
+}
+.stack-card h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+.stack-card p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+}
+.stack-items {
+    color: #ddd !important;
+    word-break: break-word;
+    margin-top: 8px !important;
+}
+.secondary {
+    border: 1px solid #555;
+    background: transparent;
+    color: white;
+    border-radius: 22px;
+    padding: 10px 14px;
+    margin-top: 12px;
+}
+.note {
+    margin-top: 14px;
+}
+.player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #181818;
+    border-top: 1px solid #303030;
+    z-index: 5;
+}
+.player-inner {
+    max-width: 1100px;
+    margin: auto;
+    padding: 12px 18px;
+    display: grid;
+    grid-template-columns: 1fr 1.3fr 1fr;
+    align-items: center;
+    gap: 14px;
+}
+.now-playing {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+.mini-cover {
+    width: 45px;
+    height: 45px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #cf8a61, #472b61);
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+    flex-shrink: 0;
+}
+.now-text {
+    min-width: 0;
+}
+.now-title {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.now-artist {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+.heart {
+    border: 0;
+    background: none;
+    color: var(--green);
+    font-size: 18px;
+}
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.buttons {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+.icon-btn {
+    border: 0;
+    background: none;
+    color: #ddd;
+    font-size: 20px;
+    padding: 2px;
+}
+.play-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 0;
+    background: white;
+    color: #111;
+    font-size: 17px;
+    font-weight: bold;
+}
+.progress {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 10px;
+}
+.progress-line {
+    height: 4px;
+    background: #555;
+    border-radius: 8px;
+    flex: 1;
+    overflow: hidden;
+    cursor: pointer;
+}
+.progress-fill {
+    height: 100%;
+    width: 0;
+    background: var(--green);
+}
+.player-right {
+    text-align: right;
+    color: var(--muted);
+    font-size: 11px;
+}
+.toast {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #282828;
+    color: white;
+    padding: 11px 16px;
+    border-radius: 24px;
+    font-size: 13px;
+    display: none;
+    z-index: 10;
+}
+@media (min-width: 700px) {
+    .quick-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .greeting {
+        font-size: 34px;
+    }
+}
+@media (max-width: 520px) {
+    .app {
+        padding: 14px 12px 145px;
+    }
+    .brand {
+        font-size: 19px;
+    }
+    .greeting {
+        font-size: 25px;
+    }
+    .quick {
+        font-size: 11px;
+        gap: 7px;
+    }
+    .quick-art {
+        width: 48px;
+    }
+    .stack-panels {
+        grid-template-columns: 1fr;
+    }
+    .player-inner {
+        grid-template-columns: minmax(0, 1fr) auto;
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    .controls {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .player-right {
+        display: none;
+    }
+    .buttons {
+        gap: 10px;
+    }
+    .progress {
+        display: none;
+    }
+    .heart {
+        display: none;
+    }
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+    <div class="brand">
+        <div class="logo">≋</div>
+        StackTunes
+    </div>
+    <button class="profile" onclick="showToast('Stack-based playlist demo')">
+        Student Project ▾
+    </button>
+</header>
+<h1 class="greeting">Good evening</h1>
+<div class="quick-grid">
+    <div class="quick">
+        <div class="quick-art">🎧</div>
+        <span>My Playlist</span>
+    </div>
+    <div class="quick">
+        <div class="quick-art">🌅</div>
+        <span>Chill Vibes</span>
+    </div>
+    <div class="quick">
+        <div class="quick-art">⚡</div>
+        <span>Afrobeats Mix</span>
+    </div>
+    <div class="quick">
+        <div class="quick-art">💜</div>
+        <span>Favorites</span>
+    </div>
+</div>
+<div class="section-head">
+    <h2>Your playlist</h2>
+    <span id="songCount">0 songs</span>
+</div>
+<div class="search-wrap">
+    <input id="searchInput" type="search"
+           placeholder="Search songs in your playlist..."
+           oninput="renderPlaylist()">
+</div>
+<form class="add-row" onsubmit="addSong(event)">
+    <input id="songInput" type="text"
+           placeholder="Add a song title..." maxlength="80">
+    <button class="primary" type="submit">＋ Add title</button>
+</form>
+<div class="upload-row">
+    <label class="upload-label">
+        ＋ Import audio files
+        <input id="audioFiles" type="file" accept="audio/*"
+               multiple onchange="importAudio(event)">
+    </label>
+    <span class="help">Choose audio files saved on your phone to play real music.</span>
+</div>
+<div id="playlist" class="track-list"></div>
+<div class="stack-panels">
+    <div class="stack-card">
+        <h3>↶ Previous songs · Stack</h3>
+        <p>Last song visited is on top (LIFO).</p>
+        <p class="stack-items" id="historyStack">Empty</p>
+        <button class="secondary" onclick="previousSong()">Go back</button>
+    </div>
+    <div class="stack-card">
+        <h3>↷ Forward songs · Stack</h3>
+        <p>Move forward through your navigation history.</p>
+        <p class="stack-items" id="forwardStack">Empty</p>
+        <button class="secondary" onclick="nextSong()">Go forward</button>
+    </div>
+</div>
+<p class="note">
+    Stack data structure demonstration: Previous and Forward use push() and pop()
+    (LIFO). Import audio files you own or have permission to use. Imported audio
+    files may need to be imported again after refreshing the page.
+</p>
+</div>
+<div class="player">
+    <div class="player-inner">
+        <div class="now-playing">
+            <div class="mini-cover" id="miniCover">🎵</div>
+            <div class="now-text">
+                <div class="now-title" id="nowTitle">No song selected</div>
+                <div class="now-artist" id="nowArtist">Import audio or add a title</div>
+            </div>
+            <button class="heart" onclick="showToast('Favorites demo')">♥</button>
+        </div>
+        <div class="controls">
+            <div class="buttons">
+                <button class="icon-btn" onclick="previousSong()">⏮</button>
+                <button class="play-btn" id="playButton" onclick="togglePlay()">▶</button>
+                <button class="icon-btn" onclick="nextSong()">⏭</button>
+            </div>
+            <div class="progress">
+                <span id="elapsed">0:00</span>
+                <div class="progress-line" id="progressLine">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+        <div class="player-right">♫ Real local audio playback</div>
+    </div>
+</div>
+<audio id="audio" preload="metadata"></audio>
+<div id="toast" class="toast"></div>
+<script>
+let songs = [];
+let currentIndex = -1;
+/*
+ STACK DATA STRUCTURES:
+ historyStack stores previously selected songs.
+ forwardStack stores songs available when moving forward.
+ push() adds an item to the top.
+ pop() removes the most recently added item (LIFO).
+*/
+let historyStack = [];
+let forwardStack = [];
+let isPlaying = false;
+let toastTimer;
+const audio = document.getElementById("audio");
+function addSong(event) {
+    event.preventDefault();
+    const input = document.getElementById("songInput");
+    const title = input.value.trim();
+    if (!title) {
+        showToast("Enter a song title first.");
+        return;
+    }
+    songs.push({
+        title: title,
+        artist: "Playlist title · no audio file",
+        emoji: "🎵",
+        src: null
+    });
+    input.value = "";
+    if (currentIndex === -1) {
+        currentIndex = 0;
+    }
+    forwardStack = [];
+    renderAll();
+    showToast("Song added! Import its audio file to play it.");
+}
+function importAudio(event) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+    files.forEach(function(file) {
+        songs.push({
+            title: file.name.replace(/\.[^/.]+$/, ""),
+            artist: "Local audio file",
+            emoji: "🎵",
+            src: URL.createObjectURL(file)
+        });
+    });
+    if (currentIndex === -1 && songs.length > 0) {
+        currentIndex = 0;
+    }
+    forwardStack = [];
+    renderAll();
+    if (songs[currentIndex] && songs[currentIndex].src) {
+        loadCurrent(false);
+    }
+    showToast(files.length + " audio file(s) added.");
+    event.target.value = "";
+}
+function selectSong(index) {
+    if (index === currentIndex) {
+        if (songs[index] && songs[index].src) {
+            togglePlay();
+        } else {
+            showToast("Import an audio file to play this title.");
+        }
+        return;
+    }
+    if (currentIndex >= 0) {
+        historyStack.push(currentIndex);
+    }
+    currentIndex = index;
+    forwardStack = [];
+    loadCurrent(false);
+    renderAll();
+    if (songs[index] && songs[index].src) {
+        audio.play().then(function() {
+            isPlaying = true;
+            updatePlayButton();
+        }).catch(function() {
+            showToast("Tap Play to start audio.");
+        });
+    } else {
+        audio.pause();
+        isPlaying = false;
+        updatePlayButton();
+        showToast("This is a title only. Import audio to play it.");
+    }
+}
+function loadCurrent(autoplay) {
+    const song = songs[currentIndex];
+    audio.pause();
+    isPlaying = false;
+    if (song && song.src) {
+        audio.src = song.src;
+        audio.load();
+        if (autoplay) {
+            audio.play().then(function() {
+                isPlaying = true;
+                updatePlayButton();
+            }).catch(function() {
+                showToast("Tap Play to start audio.");
+            });
+        }
+    } else {
+        audio.removeAttribute("src");
+        audio.load();
+    }
+    updatePlayButton();
+    updateProgress();
+}
+/* STACK OPERATION: pop the most recently visited previous song. */
+function previousSong() {
+    if (historyStack.length === 0) {
+        showToast("No previous song in the stack.");
+        return;
+    }
+    if (currentIndex >= 0) {
+        forwardStack.push(currentIndex);
+    }
+    currentIndex = historyStack.pop();
+    loadCurrent(true);
+    renderAll();
+}
+/* STACK OPERATION: pop the most recently visited forward song. */
+function nextSong() {
+    if (forwardStack.length === 0) {
+        showToast("No forward song in the stack.");
+        return;
+    }
+    if (currentIndex >= 0) {
+        historyStack.push(currentIndex);
+    }
+    currentIndex = forwardStack.pop();
+    loadCurrent(true);
+    renderAll();
+}
+function togglePlay() {
+    const song = songs[currentIndex];
+    if (!song) {
+        showToast("Import an audio file first.");
+        return;
+    }
+    if (!song.src) {
+        showToast("Import an audio file to play this title.");
+        return;
+    }
+    if (audio.paused) {
+        audio.play().then(function() {
+            isPlaying = true;
+            updatePlayButton();
+        }).catch(function() {
+            showToast("Unable to play this audio file.");
+        });
+    } else {
+        audio.pause();
+        isPlaying = false;
+        updatePlayButton();
+    }
+}
+function updatePlayButton() {
+    document.getElementById("playButton").textContent =
+        isPlaying && !audio.paused ? "Ⅱ" : "▶";
+}
+function renderPlaylist() {
+    const list = document.getElementById("playlist");
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    list.innerHTML = "";
+    const visibleSongs = songs
+        .map(function(song, index) {
+            return { song: song, index: index };
+        })
+        .filter(function(item) {
+            return item.song.title.toLowerCase().includes(query);
+        });
+    if (visibleSongs.length === 0) {
+        list.innerHTML =
+            '<div class="empty">No songs yet. Add a title or import audio files above.</div>';
+    }
+    visibleSongs.forEach(function(item) {
+        const song = item.song;
+        const index = item.index;
+        const row = document.createElement("div");
+        row.className = "track" +
+            (index === currentIndex ? " active" : "");
+        row.innerHTML = `
+            <div class="track-num">
+                ${index === currentIndex ? "♫" : String(index + 1).padStart(2, "0")}
+            </div>
+            <div class="cover">${song.emoji}</div>
+            <div>
+                <div class="track-title"></div>
+                <div class="track-artist"></div>
+            </div>
+            <div class="track-meta">
+                ${index === currentIndex ? (song.src ? "NOW" : "TITLE") : "•••"}
+            </div>
+        `;
+        row.querySelector(".track-title").textContent = song.title;
+        row.querySelector(".track-artist").textContent = song.artist;
+        row.onclick = function() {
+            selectSong(index);
+        };
+        list.appendChild(row);
+    });
+    document.getElementById("songCount").textContent =
+        songs.length + (songs.length === 1 ? " song" : " songs");
+}
+function renderStack(elementId, stack) {
+    const labels = stack.slice().reverse().map(function(index) {
+        return songs[index] ? songs[index].title : "(unavailable)";
+    });
+    document.getElementById(elementId).textContent =
+        labels.length ? labels.join(" ← ") : "Empty";
+}
+function renderAll() {
+    const song = songs[currentIndex];
+    document.getElementById("nowTitle").textContent =
+        song ? song.title : "No song selected";
+    document.getElementById("nowArtist").textContent =
+        song ? song.artist : "Import audio or add a title";
+    document.getElementById("miniCover").textContent =
+        song ? song.emoji : "🎵";
+    renderPlaylist();
+    renderStack("historyStack", historyStack);
+    renderStack("forwardStack", forwardStack);
+    updatePlayButton();
+}
+function formatTime(seconds) {
+    if (!Number.isFinite(seconds)) return "0:00";
+    return Math.floor(seconds / 60) + ":" +
+        String(Math.floor(seconds % 60)).padStart(2, "0");
+}
+function updateProgress() {
+    document.getElementById("elapsed").textContent =
+        formatTime(audio.currentTime);
+    document.getElementById("duration").textContent =
+        formatTime(audio.duration);
+    document.getElementById("progressFill").style.width =
+        (audio.duration ? audio.currentTime / audio.duration * 100 : 0) + "%";
+}
+audio.addEventListener("play", function() {
+    isPlaying = true;
+    updatePlayButton();
+});
+audio.addEventListener("pause", function() {
+    isPlaying = false;
+    updatePlayButton();
+});
+audio.addEventListener("timeupdate", updateProgress);
+audio.addEventListener("loadedmetadata", updateProgress);
+audio.addEventListener("ended", function() {
+    isPlaying = false;
+    updatePlayButton();
+    if (forwardStack.length > 0) {
+        nextSong();
+    }
+});
+document.getElementById("progressLine").addEventListener("click", function(event) {
+    if (!Number.isFinite(audio.duration) || !audio.duration) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    audio.currentTime =
+        ((event.clientX - rect.left) / rect.width) * audio.duration;
+});
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+        toast.style.display = "none";
+    }, 2600);
+}
+renderAll();
+</script>
+</body>
+</html>
